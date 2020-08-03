@@ -1,58 +1,59 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
-	"github.com/ProtonMail/gopenpgp/v2/crypto"
 )
 
 func main()  {
 
+	service := ProtonMailService{
+		UserName: "6992917",
+		PassWord: "QpfzEwZG3Lt6!$f",
+	}
 
-	//service := ProtonMailService{
-	//	UserName: "6992917",
-	//	PassWord: "QpfzEwZG3Lt6!$f",
-	//}
+
+	fmt.Println(service.Login())
+	service.GetUser()
+	service.GetSalts()
+
+	service.GetCookies()
+	service.GetAddress()
+
+
+	//fmt.Println(service.UserResult)
+	//fmt.Println(service.AddressResult)
+
+	msgResult, err := service.CreateDraft("我是标题", "6992917@qq.com", "", "")
+	fmt.Println(msgResult.Message.ID, err)
+
+	msgResult, err = service.CreateDraft("我是标题", "6992917@qq.com", msgResult.Message.ID, "<br><br><br>测试发送内容<br><br><br>")
+	fmt.Println(msgResult.Message.ID, err)
+
+	service.SendMessage(msgResult.Message.ID, msgResult.Message.Body)
+
+
+
+
+	//salt, _ := base64.StdEncoding.DecodeString(service.SaltsResult.KeySalts[0].KeySalt)
+	//generatedMailboxPassword, _ := srp.MailboxPassword(service.PassWord, salt)
+	//generatedMailboxPassword = strings.ReplaceAll(generatedMailboxPassword, "$2y$10$", "")
+	//generatedMailboxPassword = strings.ReplaceAll(generatedMailboxPassword, string(Radix64Encode(salt)), "")
 	//
-	//fmt.Println(service.Login())
+	//fmt.Println(generatedMailboxPassword)
 	//
-	//service.GetUser()
-	//service.GetCookies()
-	//service.GetAddress()
+	//pgpMessage, _:= crypto.NewPGPSplitMessageFromArmored(msgResult.Message.Body)
 	//
-	////fmt.Println(service.UserResult)
-	////fmt.Println(service.AddressResult)
+	//fmt.Println(pgpMessage.DataPacket)
+	//fmt.Println(pgpMessage.KeyPacket)
 	//
-	//msgResult, err := service.CreateDraft("ttt", "6992917@qq.com", "", "")
-	//fmt.Println(msgResult.Message.ID, err)
+	//privaetKey, _ := crypto.NewKeyFromArmored(service.AddressResult.Addresses[0].Keys[0].PrivateKey)
+	//key, _ := privaetKey.Unlock([]byte(generatedMailboxPassword))
 	//
-	//msgResult, err = service.CreateDraft("ttt", "6992917@qq.com", msgResult.Message.ID, "发送内容")
-	//fmt.Println(msgResult.Message.ID, err)
-
-
-
-	//publicKeyObj, err := crypto.NewKeyFromArmored(service.AddressResult.Addresses[0].Keys[0].PublicKey)
-	//publicKeyRing, err := crypto.NewKeyRing(publicKeyObj)
+	//keyRing, _ := crypto.NewKeyRing(key)
+	//SessionKey, _ := keyRing.DecryptSessionKey(pgpMessage.KeyPacket)
+	//fmt.Println(base64.StdEncoding.EncodeToString(SessionKey.Key))
 	//
-	sessionKey, _ := crypto.GenerateSessionKey()
-	//
-	//keyPacket, err := publicKeyRing.EncryptSessionKey(sessionKey) // Will encrypt to all the keys in the keyring
+	//fmt.Println(base64.StdEncoding.EncodeToString(pgpMessage.DataPacket))
 
 
-	var message = crypto.NewPlainMessage([]byte("t"))
-
-	fmt.Println(base64.StdEncoding.EncodeToString(sessionKey.Key))
-	// Encrypt data with session key
-	dataPacket, _ := sessionKey.Encrypt(message)
-	//fmt.Println(base64.StdEncoding.EncodeToString(dataPacket), err)
-
-	pgpSplitMessage := crypto.NewPGPSplitMessage(sessionKey.Key, dataPacket)
-	pgpMessage := pgpSplitMessage.GetPGPMessage()
-
-	fmt.Println(base64.StdEncoding.EncodeToString(pgpMessage.Data))
-
-	newPGPSplitMessage, _ := pgpMessage.SeparateKeyAndData(len(pgpMessage.Data), 1)
-	fmt.Println(newPGPSplitMessage)
-
-	fmt.Println(base64.StdEncoding.EncodeToString(newPGPSplitMessage.DataPacket), base64.StdEncoding.EncodeToString(newPGPSplitMessage.KeyPacket))
 }

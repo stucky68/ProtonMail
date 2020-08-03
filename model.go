@@ -7,6 +7,7 @@ type GetInfoResult struct {
 	Version int `json:"Version"`
 	Salt string `json:"Salt"`
 	SRPSession string `json:"SRPSession"`
+	Error string `json:"Error"`
 }
 
 type AuthData struct {
@@ -31,10 +32,12 @@ type AuthResult struct {
 	UID string `json:"UID"`
 	Uid string `json:"Uid"`
 	UserID string `json:"UserID"`
+	Error string `json:"Error"`
 }
 
 type UserResult struct {
 	Code int `json:"Code"`
+	Error string `json:"Error"`
 	User struct {
 		ID          string `json:"ID"`
 		Name        string `json:"Name"`
@@ -61,6 +64,15 @@ type UserResult struct {
 	} `json:"Keys"`
 }
 
+type SaltsResult struct {
+	Code int `json:"Code"`
+	Error string `json:"Error"`
+	KeySalts[] struct {
+		ID string `json:"ID"`
+		KeySalt string `json:"KeySalt"`
+	} `json:"KeySalts"`
+}
+
 type CookiesData struct {
 	AccessToken string `json:"AccessToken"`
 	GrantType string `json:"GrantType"`
@@ -73,6 +85,7 @@ type CookiesData struct {
 
 type AddressResult struct {
 	Code int `json:"Code"`
+	Error string `json:"Error"`
 	Addresses[] struct{
 		ID string `json:"ID"`
 		DomainID string `json:"DomainID"`

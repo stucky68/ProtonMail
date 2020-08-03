@@ -2,85 +2,42 @@ package main
 
 import (
 	"ProtonMail/srp"
+	"encoding/base64"
 	"fmt"
+	"github.com/ProtonMail/gopenpgp/v2/crypto"
+	"strings"
 	"testing"
 
 )
 
-const (
-	testServerEphemeral = "l13IQSVFBEV0ZZREuRQ4ZgP6OpGiIfIjbSDYQG3Yp39FkT2B/k3n1ZhwqrAdy+qvPPFq/le0b7UDtayoX4aOTJihoRvifas8Hr3icd9nAHqd0TUBbkZkT6Iy6UpzmirCXQtEhvGQIdOLuwvy+vZWh24G2ahBM75dAqwkP961EJMh67/I5PA5hJdQZjdPT5luCyVa7BS1d9ZdmuR0/VCjUOdJbYjgtIH7BQoZs+KacjhUN8gybu+fsycvTK3eC+9mCN2Y6GdsuCMuR3pFB0RF9eKae7cA6RbJfF1bjm0nNfWLXzgKguKBOeF3GEAsnCgK68q82/pq9etiUDizUlUBcA=="
-	testServerProof     = "SLCSIClioSAtozauZZzcJuVPyY+MjnxfJSgEe9y6RafgjlPqnhQTZclRKPGsEhxVyWan7PIzhL+frPyZNaE1QaV5zbqz1yf9RXpGyTjZwU3FuVCJpkhp6iiCK3Wd2SemxawFXC06dgAdJ7I3HKvfkXeMANOUUh5ofjnJtXg42OGp4x1lKoFcH+IbB/CvRNQCmRTyhOiBJmZyUFwxHXLT/h+PlD0XSehcyybIIBIsscQ7ZPVPxQw4BqlqoYzTjjXPJxLxeQUQm2g9bPzT+izuR0VOPDtjt+dXrWny90k2nzS0Bs2YvNIqbJn1aQwFZr42p/O1I9n5S3mYtMgGk/7b1g=="
-
-	testClientProof      = "Qb+1+jEqHRqpJ3nEJX2FEj0kXgCIWHngO0eT4R2Idkwke/ceCIUmQa0RfTYU53ybO1AVergtb7N0W/3bathdHT9FAHhy0vDGQDg/yPnuUneqV76NuU+pQHnO83gcjmZjDq/zvRRSD7dtIORRK97xhdR9W9bG5XRGr2c9Zev40YVcXgUiNUG/0zHSKQfEhUpMKxdauKtGC+dZnZzU6xaU0qvulYEsraawurRf0b1VXwohM6KE52Fj5xlS2FWZ3Mg0WIOC5KW5ziI6QirEUDK2pH/Rxvu4HcW9aMuppUmHk9Bm6kdg99o3vl0G7OgmEI7y6iyEYmXqH44XGORJ2sDMxQ=="
-	testModulus          = "W2z5HBi8RvsfYzZTS7qBaUxxPhsfHJFZpu3Kd6s1JafNrCCH9rfvPLrfuqocxWPgWDH2R8neK7PkNvjxto9TStuY5z7jAzWRvFWN9cQhAKkdWgy0JY6ywVn22+HFpF4cYesHrqFIKUPDMSSIlWjBVmEJZ/MusD44ZT29xcPrOqeZvwtCffKtGAIjLYPZIEbZKnDM1Dm3q2K/xS5h+xdhjnndhsrkwm9U9oyA2wxzSXFL+pdfj2fOdRwuR5nW0J2NFrq3kJjkRmpO/Genq1UW+TEknIWAb6VzJJJA244K/H8cnSx2+nSNZO3bbo6Ys228ruV9A8m6DhxmS+bihN3ttQ=="
-	testModulusClearSign = `-----BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
-W2z5HBi8RvsfYzZTS7qBaUxxPhsfHJFZpu3Kd6s1JafNrCCH9rfvPLrfuqocxWPgWDH2R8neK7PkNvjxto9TStuY5z7jAzWRvFWN9cQhAKkdWgy0JY6ywVn22+HFpF4cYesHrqFIKUPDMSSIlWjBVmEJZ/MusD44ZT29xcPrOqeZvwtCffKtGAIjLYPZIEbZKnDM1Dm3q2K/xS5h+xdhjnndhsrkwm9U9oyA2wxzSXFL+pdfj2fOdRwuR5nW0J2NFrq3kJjkRmpO/Genq1UW+TEknIWAb6VzJJJA244K/H8cnSx2+nSNZO3bbo6Ys228ruV9A8m6DhxmS+bihN3ttQ==
------BEGIN PGP SIGNATURE-----
-Version: ProtonMail
-Comment: https://protonmail.com
-wl4EARYIABAFAlwB1j0JEDUFhcTpUY8mAAD8CgEAnsFnF4cF0uSHKkXa1GIa
-GO86yMV4zDZEZcDSJo0fgr8A/AlupGN9EdHlsrZLmTA1vhIx+rOgxdEff28N
-kvNM7qIK
-=q6vu
------END PGP SIGNATURE-----`
-)
 
 func TestNewAuth(t *testing.T) {
-	type args struct {
-		version         int
-		username        string
-		password        string
-		salt            string
-		signedModulus   string
-		serverEphemeral string
-	}
-	tests := []struct {
-		name     string
-		args     args
-		wantAuth *srp.Auth
-		wantErr  bool
-	}{
-		{
-			name: "test1",
-			args: args{
-				version:         4,
-				username:        "axiomarrochar",
-				password:        "123",
-				salt:            "xTRjm6MUl5mpYA==",
-				signedModulus:   "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA256\n\no4ycZ14/7LfHkuSKWNlpQEh6bwLMVKvo0MFqVq9wHXwkZ/zMcqYaVhqNvLyDB0WY5Uv/Bo23JQsox52lM+4jPydw9/A9saAj8erLCc3ZaZHxOl/a8tlYTq7FeDrbhSSgivwTKJ5Y9otla/U8FATZBxqi7nqDihS5/7x/yK3VRnEsBG1i5DcY1UQK3KD9i9v7N2QTuGFYnRCv0MFsHzrQZWvUa1NsUhozU5PSV5s7hZkb/p6J3B9ybD6+LzuLS9fyLMcVdxzn2WUXG7JLeBbqsoECUfq9KP2waTzVLELOenWUV1wbioceJsaiP97ViwNJdnKx1ICoYu2c+z8ctVcqlw==\n-----BEGIN PGP SIGNATURE-----\nVersion: ProtonMail\nComment: https://protonmail.com\n\nwl4EARYIABAFAlwB1j0JEDUFhcTpUY8mAAB02wD5AOhMNS/K6/nvaeRhTr5n\niDGMalQccYlb58XzUEhqf3sBAOcTsz0fP3PVdMQYBbqcBl9Y6LGIG9DF4B4H\nZeLCoyYN\n=cAxM\n-----END PGP SIGNATURE-----\n",
-				serverEphemeral: "xpBZbd761rSatefDH7TI5aYMHN1IviIb/hpG2yIz4kZQ/INDXxe11pIGxKeOKszbr8tJHrqQA9LF9OFr5vEqHgxzSQbAz/7ERaRK76mbtc+K9dOFsqq1oJ2dSxe1gI49kSyxqco33pETTLmIG3fYUqTJtE7Bmxn1A0SY3Nj5x2c1TGzGxU5yC5vstWLP7NNVDpgMfARUV6YNMjKeD6fvNdQB4bKcwn9vVTU8F04rVqagGG/VQMmIG8cYGd+cjVQavjGHagXbjsQAGblFMQ5ta6bnJn0fbdeflhk0So/FlvCpyoEqVeRZx/auZ9oUfkAXJjZOblaAIHMx+I3CCdyPUw==",
-			},
-		},
 
-		{
-			name: "test2",
-			args: args{
-				version:         4,
-				username:        "Cyb3rReaper",
-				password:        "123",
-				salt:            "CGhrAMJla9YHGQ==",
-				signedModulus:   "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA256\n\no4ycZ14/7LfHkuSKWNlpQEh6bwLMVKvo0MFqVq9wHXwkZ/zMcqYaVhqNvLyDB0WY5Uv/Bo23JQsox52lM+4jPydw9/A9saAj8erLCc3ZaZHxOl/a8tlYTq7FeDrbhSSgivwTKJ5Y9otla/U8FATZBxqi7nqDihS5/7x/yK3VRnEsBG1i5DcY1UQK3KD9i9v7N2QTuGFYnRCv0MFsHzrQZWvUa1NsUhozU5PSV5s7hZkb/p6J3B9ybD6+LzuLS9fyLMcVdxzn2WUXG7JLeBbqsoECUfq9KP2waTzVLELOenWUV1wbioceJsaiP97ViwNJdnKx1ICoYu2c+z8ctVcqlw==\n-----BEGIN PGP SIGNATURE-----\nVersion: ProtonMail\nComment: https://protonmail.com\n\nwl4EARYIABAFAlwB1j0JEDUFhcTpUY8mAAB02wD5AOhMNS/K6/nvaeRhTr5n\niDGMalQccYlb58XzUEhqf3sBAOcTsz0fP3PVdMQYBbqcBl9Y6LGIG9DF4B4H\nZeLCoyYN\n=cAxM\n-----END PGP SIGNATURE-----\n",
-				serverEphemeral: "vl0zIXo4bLPtYVoy3kIvhWQx3ObPMYTY0c5/TFHlmwgBW6Hz/p2XDJdDykF3rBfwrSUD4tfs1YRCfgGfvxegCIQhL419OPYgA+ApXUuS2ni86AXUfjPnvJju/inYQxER8nzEhM8DZYAiNM44qeepmXGrHmwjXAMzyaggqxmkTq4v+seKntFE5oH7iIFacgP52wnV/p6OLOMNS4t/vZ3haKaoEVoFyCVVoTJ/OVPp1ZoUovOoxwDvUAOjSEgswenR96xT+4CsPz9Dm+yF/bDugcWGQ4KB8KEzBrO0PqmCQWMYOKaILegtgTjg08eQTvGylSEZmbTeVzoPe/THqh2bJw==",
-			},
-		},
+	service := ProtonMailService{
+		UserName: "6992917",
+		PassWord: "QpfzEwZG3Lt6!$f",
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotAuth, err := srp.NewAuth(tt.args.version, tt.args.username, tt.args.password, tt.args.salt, tt.args.signedModulus, tt.args.serverEphemeral)
-			if gotAuth != nil {
-				fmt.Println(gotAuth.HashedPassword)
-				fmt.Println(gotAuth.Modulus)
-				//t.Errorf("gotAuth() error = %v", gotAuth)
-			}
 
-			if err != nil {
-				t.Errorf("NewAuth() error = %v", err)
-				return
-			}
-			// if !reflect.DeepEqual(gotAuth, tt.wantAuth) {
-			// 	t.Errorf("NewAuth() = %v, want %v", gotAuth, tt.wantAuth)
-			// }
-		})
+	salt, _ := base64.StdEncoding.DecodeString("hOkBf1JPQwzqwRIp0LM9tg==")
+	generatedMailboxPassword, _ := srp.MailboxPassword(service.PassWord, salt)
+	generatedMailboxPassword = strings.ReplaceAll(generatedMailboxPassword, "$2y$10$", "")
+	generatedMailboxPassword = strings.ReplaceAll(generatedMailboxPassword, string(Radix64Encode(salt)), "")
+
+	fmt.Println(generatedMailboxPassword)
+
+	pgpMessage, err := crypto.NewPGPSplitMessageFromArmored("-----BEGIN PGP MESSAGE-----\nVersion: ProtonMail\n\nwcBMA737zsABniVYAQf/aXESWNmyjj9FhyGEYpPHNr0yqd4VkjLRy9O6B5nL\nCGKx52siCIls7TE2qYCwocGaefPRyHfP1YuRK+GVK6zL+ajZbNDp7Q96CXos\nTV/0Rgt4r9jLO8iwDL2W63I6vWbLC0aoaPjTYnFYm7/QnQEALyKj2lMdxuf6\nuVNTCunjgRg4Pnqe1ZVGJVE53dYAalUvkDSfPBHp3VO4xpIYnAHu6Yp30sUK\nrVm/7OfJsj6csHX7Ar3OAcH615Sb3i2biAghv29oT2VY0EBxMo4SUm81NJZl\nYXI6AEXjckUzXpFo1JlfAh747DAiFd3hnvmuW1SigC+nSD493OIyg0qd8bpH\nUtLBZAGaTere6Um+tQfsz8cosl0KhlUROcB/bbHFSA+21TN+dssJX3VW8i65\nhNYl5wff1lnYnCnfqc+XuF470Vjrrp40fNI8f4RN507+l/uMiacJCxjag9rL\nM7S1o2dYNE+bnXpfBwNT/N8H0W6D1LGMjIGtzwjDZdulCsPdvWsl+xmNPGcH\nCNyk2B7558cPKi2uPg3hA6KTFjNk3CUwqAZ98EFwhrsEmUbVqy20Gp2ZqEc6\naIo9pYd8kPNIBrW05GLBoLeNPHaVsTqQWl6TMPicfBw5y3vu9YdfUfLOQ0rI\nPh/Xc3nFnu138VdnFMu3QvCKcj1FiVnM8uZecOyymNF5as+gpGhf4+9oQDHi\nuDFN0bKtu3vINiqvviuyph2lmO/uFma0oYnZ2NJbGkWanApu8JzVn3Al9Wpf\nDCIz8+XFuPHAu5SRoh6qiUI/EQm+bFpldOmhqlsfmwo2gXo27JDm7m8GB5wu\nCrhSt9iQ6XWX+28dJyeYVIkVf+O+mCTv504el0UPCUUTQSEZPWsNFJ82t8Q6\nWzMj5s3P5t6NWBxP+2B3hab0NuhwdrzYVFOBRTK5U+nsiwSdb4raMtRlI8it\nT5mjMLu8tGgLLA7/ZywnHJcAaAbnoug9P7Yv/Osb1ZvspnE3pECtB2lvXi6F\nDM5WOahI3X/AC9eMd0anZIQmzJbDIsCvSeaLDiCnEM4WbpTQEkqu+rjXoLUh\n5TnvfhaHEbCKYz+a\n=t73G\n-----END PGP MESSAGE-----")
+	if err != nil {
+		fmt.Println(err)
 	}
+	fmt.Println(pgpMessage.DataPacket, err)
+	fmt.Println(pgpMessage.KeyPacket)
+
+	privaetKey, _ := crypto.NewKeyFromArmored("-----BEGIN PGP PRIVATE KEY BLOCK-----\nVersion: ProtonMail\n\n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\nh+UKDBBoA59lhCqeZ4WCMTslRNvhLIxTBAM=\n=oipr\n-----END PGP PRIVATE KEY BLOCK-----")
+	key, _ := privaetKey.Unlock([]byte(generatedMailboxPassword))
+
+	keyRing, _ := crypto.NewKeyRing(key)
+	SessionKey, _ := keyRing.DecryptSessionKey(pgpMessage.KeyPacket)
+	fmt.Println(base64.StdEncoding.EncodeToString(SessionKey.Key), SessionKey.Algo)
+
+	fmt.Println(base64.StdEncoding.EncodeToString(pgpMessage.DataPacket))
 }

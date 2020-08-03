@@ -44,5 +44,31 @@ type MessageResult struct {
 	Code int `json:"Code"`
 	Message struct {
 		ID string `json:"ID"`
+		Body string `json:"Body"`
+
 	} `json:"Message"`
+}
+
+type SendMessageAddresses struct {
+	Type int `json:"Type"`
+	Signature int `json:"Signature"`
+}
+
+type SendMeesagePackages struct {
+	Flags int `json:"Flags"`
+	Addresses map[string]SendMessageAddresses `json:"Addresses"`
+	MIMEType string `json:"MIMEType"`
+	Body string `json:"Body"`
+	Type int `json:"Type"`
+	AttachmentKeys struct{
+	} `json:"AttachmentKeys"`
+	BodyKey struct {
+		Key string `json:"Key"`
+		Algorithm string `json:"Algorithm"`
+	} `json:"BodyKey"`
+}
+
+type SendMessageData struct {
+	Id string `json:"id"`
+	Packages[] SendMeesagePackages `json:"Packages"`
 }
