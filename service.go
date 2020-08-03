@@ -27,41 +27,32 @@ type ProtonMailService struct {
 	passphrase string
 }
 
-func (service *ProtonMailService) info(userName string) (result GetInfoResult, err error) {
-	url := "https://mail.protonmail.com/api/auth/info"
-	method := "POST"
+func (service *ProtonMailService) Info() (result GetInfoResult, err error) {
+	header := make(map[string]string)
+	header["x-pm-apiversion"] = "3"
+	header["Accept"] = "application/vnd.protonmail.v1+json"
+	header["x-pm-appversion"] = "Web_3.16.32"
+	header["Content-Type"] = "application/json"
 
-	payload := strings.NewReader("{\"Username\":\"" + service.UserName + "\"}")
-
-	client := &http.Client {}
-	req, err := http.NewRequest(method, url, payload)
+	body, err := HttpPost("https://mail.protonmail.com/api/auth/info", header, "{\"Username\":\"" + service.UserName + "\"}")
 
 	if err != nil {
 		return
 	}
-	req.Header.Add("x-pm-apiversion", "3")
-	req.Header.Add("Accept", "application/vnd.protonmail.v1+json")
-	req.Header.Add("x-pm-appversion", "Web_3.16.32")
-	req.Header.Add("Content-Type", "application/json")
 
-	res, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	err = json.Unmarshal([]byte(body), &result)
+
 	if err != nil {
 		return
 	}
 
-	err = json.Unmarshal(body, &result)
+	if result.Code != 1000 {
+		return result, errors.New(result.Error)
+	}
 	return
 }
 
 func (service *ProtonMailService) auth(ClientEphemeral, ClientProof, SRPSession string) (result AuthResult, err error) {
-	url := "https://mail.protonmail.com/api/auth"
-	method := "POST"
-
 	authData := AuthData{
 		ClientEphemeral: ClientEphemeral,
 		ClientProof:     ClientProof,
@@ -74,94 +65,84 @@ func (service *ProtonMailService) auth(ClientEphemeral, ClientProof, SRPSession 
 		return
 	}
 
-	payload := strings.NewReader(string(d))
-
-	client := &http.Client {}
-	req, err := http.NewRequest(method, url, payload)
+	header := make(map[string]string)
+	header["x-pm-apiversion"] = "3"
+	header["Accept"] = "application/vnd.protonmail.v1+json"
+	header["x-pm-appversion"] = "Web_3.16.32"
+	header["Content-Type"] = "application/json"
+	body, err := HttpPost("https://mail.protonmail.com/api/auth", header, string(d))
 
 	if err != nil {
 		return
 	}
-	req.Header.Add("x-pm-apiversion", "3")
-	req.Header.Add("x-pm-appversion", "Web_3.16.32")
-	req.Header.Add("Accept", "application/vnd.protonmail.v1+json")
-	req.Header.Add("Content-Type", "application/json")
 
-	res, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	err = json.Unmarshal([]byte(body), &result)
+
 	if err != nil {
 		return
 	}
 
-	err = json.Unmarshal(body, &result)
+	if result.Code != 1000 {
+		return result, errors.New(result.Error)
+	}
 	return
 }
 
-func (service *ProtonMailService) GetUser() {
-	url := "https://mail.protonmail.com/api/users"
-	method := "GET"
+func (service *ProtonMailService) GetUser() (err error) {
+	header := make(map[string]string)
+	header["x-pm-apiversion"] = "3"
+	header["x-pm-appversion"] = "Web_3.16.32"
+	header["Accept"] = "application/vnd.protonmail.v1+json"
+	header["Content-Type"] = "application/json"
+	header["x-pm-uid"] = service.AuthResult.Uid
+	header["Authorization"] = "Bearer " + service.AuthResult.AccessToken
 
-	client := &http.Client {}
-	req, err := http.NewRequest(method, url, nil)
+	body, err := HttpGet("https://mail.protonmail.com/api/users", header)
+	err = json.Unmarshal([]byte(body), &service.UserResult)
 
 	if err != nil {
 		return
 	}
-	req.Header.Add("x-pm-apiversion", "3")
-	req.Header.Add("x-pm-appversion", "Web_3.16.32")
-	req.Header.Add("Accept", "application/vnd.protonmail.v1+json")
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("x-pm-uid", service.AuthResult.Uid)
-	req.Header.Add("Authorization", "Bearer " + service.AuthResult.AccessToken)
 
-	res, err := client.Do(req)
-	if err != nil {
-		return
+	if service.UserResult.Code != 1000 {
+		err = errors.New(service.UserResult.Error)
 	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return
-	}
-	err = json.Unmarshal(body, &service.UserResult)
+
 	return
 }
 
 func (service *ProtonMailService) GetSalts() (err error) {
-	url := "https://mail.protonmail.com/api/keys/salts"
-	method := "GET"
+	header := make(map[string]string)
+	header["x-pm-apiversion"] = "3"
+	header["x-pm-appversion"] = "Web_3.16.32"
+	header["Accept"] = "application/vnd.protonmail.v1+json"
+	header["Content-Type"] = "application/json"
+	header["x-pm-uid"] = service.AuthResult.Uid
+	header["Authorization"] = "Bearer " + service.AuthResult.AccessToken
 
-	client := &http.Client {}
-	req, err := http.NewRequest(method, url, nil)
+	body, err := HttpGet("https://mail.protonmail.com/api/keys/salts", header)
 
 	if err != nil {
 		return
 	}
-	req.Header.Add("x-pm-apiversion", "3")
-	req.Header.Add("x-pm-appversion", "Web_3.16.32")
-	req.Header.Add("Accept", "application/vnd.protonmail.v1+json")
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("x-pm-uid", service.AuthResult.Uid)
-	req.Header.Add("Authorization", "Bearer " + service.AuthResult.AccessToken)
 
-	res, err := client.Do(req)
+	err = json.Unmarshal([]byte(body), &service.SaltsResult)
+
 	if err != nil {
 		return
 	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return
-	}
-	err = json.Unmarshal(body, &service.SaltsResult)
 
 	if service.SaltsResult.Code == 1000 {
-		salt, _ := base64.StdEncoding.DecodeString(service.SaltsResult.KeySalts[0].KeySalt)
-		generatedMailboxPassword, _ := srp.MailboxPassword(service.PassWord, salt)
+		salt, err := base64.StdEncoding.DecodeString(service.SaltsResult.KeySalts[0].KeySalt)
+		if err != nil {
+			return err
+		}
+
+		generatedMailboxPassword, err := srp.MailboxPassword(service.PassWord, salt)
+		if err != nil {
+			return err
+		}
+
 		generatedMailboxPassword = strings.ReplaceAll(generatedMailboxPassword, "$2y$10$", "")
 		generatedMailboxPassword = strings.ReplaceAll(generatedMailboxPassword, string(Radix64Encode(salt)), "")
 
@@ -226,54 +207,58 @@ func (service *ProtonMailService) GetCookies() (err error) {
 	return
 }
 
-func (service *ProtonMailService) GetAddress() {
-	url := "https://mail.protonmail.com/api/addresses"
-	method := "GET"
+func (service *ProtonMailService) GetAddress() (err error) {
+	header := make(map[string]string)
+	header["x-pm-apiversion"] = "3"
+	header["x-pm-appversion"] = "Web_3.16.32"
+	header["Accept"] = "application/vnd.protonmail.v1+json"
+	header["Content-Type"] = "application/json"
+	header["x-pm-uid"] = service.AuthResult.Uid
+	header["Cookie"] = service.CookiesRaw
 
-	client := &http.Client {}
-	req, err := http.NewRequest(method, url, nil)
-
-	if err != nil {
-		return
-	}
-	req.Header.Add("x-pm-apiversion", "3")
-	req.Header.Add("x-pm-appversion", "Web_3.16.32")
-	req.Header.Add("Accept", "application/vnd.protonmail.v1+json")
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("x-pm-uid", service.AuthResult.Uid)
-	req.Header.Add("Cookie", service.CookiesRaw)
-
-	res, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := HttpGet("https://mail.protonmail.com/api/addresses", header)
+	err = json.Unmarshal([]byte(body), &service.AddressResult)
 	if err != nil {
 		return
 	}
 
-	err = json.Unmarshal(body, &service.AddressResult)
+	if service.AddressResult.Code != 1000 {
+		err = errors.New(service.AddressResult.Error)
+	}
+
 	return
 }
 
-func (service *ProtonMailService) SendMessage(msgId, msgBody string) {
+func (service *ProtonMailService) SendMessage(msgId, msgBody, receiver string) (err error) {
+	pgpMessage, err := crypto.NewPGPSplitMessageFromArmored(msgBody)
+	if err != nil {
+		return
+	}
 
-	pgpMessage, _:= crypto.NewPGPSplitMessageFromArmored(msgBody)
+	privaetKey, err := crypto.NewKeyFromArmored(service.AddressResult.Addresses[0].Keys[0].PrivateKey)
+	if err != nil {
+		return
+	}
 
-	privaetKey, _ := crypto.NewKeyFromArmored(service.AddressResult.Addresses[0].Keys[0].PrivateKey)
-	key, _ := privaetKey.Unlock([]byte(service.passphrase))
+	key, err := privaetKey.Unlock([]byte(service.passphrase))
+	if err != nil {
+		return
+	}
 
-	keyRing, _ := crypto.NewKeyRing(key)
-	SessionKey, _ := keyRing.DecryptSessionKey(pgpMessage.KeyPacket)
+	keyRing, err := crypto.NewKeyRing(key)
+	if err != nil {
+		return
+	}
 
-	url := "https://mail.protonmail.com/api/messages/" + msgId
-	method := "POST"
+	SessionKey, err := keyRing.DecryptSessionKey(pgpMessage.KeyPacket)
+	if err != nil {
+		return
+	}
 
 	var packages []SendMeesagePackages
 
 	addresses := make(map[string]SendMessageAddresses)
-	addresses["6992917@qq.com"] = SendMessageAddresses{
+	addresses[receiver] = SendMessageAddresses{
 		Type:      4,
 		Signature: 0,
 	}
@@ -306,47 +291,30 @@ func (service *ProtonMailService) SendMessage(msgId, msgBody string) {
 		return
 	}
 
-	payload := strings.NewReader(string(d))
 
-	client := &http.Client {}
-	req, err := http.NewRequest(method, url, payload)
+	header := make(map[string]string)
+	header["x-pm-apiversion"] = "3"
+	header["x-pm-appversion"] = "Web_3.16.32"
+	header["Accept"] = "application/vnd.protonmail.v1+json"
+	header["Content-Type"] = "application/json"
+	header["x-pm-uid"] = service.AuthResult.Uid
+	header["Cookie"] = service.CookiesRaw
 
-	if err != nil {
-		return
-	}
-	req.Header.Add("x-pm-apiversion", "3")
-	req.Header.Add("x-pm-appversion", "Web_3.16.32")
-	req.Header.Add("Accept", "application/vnd.protonmail.v1+json")
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("x-pm-uid", service.AuthResult.Uid)
-	req.Header.Add("Cookie", service.CookiesRaw)
+	body, err := HttpPost("https://mail.protonmail.com/api/messages/" + msgId, header, string(d))
 
-	res, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return
-	}
-
-	fmt.Println(string(body))
+	fmt.Println(body)
 
 	return
 }
 
 func (service *ProtonMailService) CreateDraft(title, receiver, id, plaintext string) (result MessageResult, err error) {
-	url := "https://mail.protonmail.com/api/messages"
-	method := "POST"
-	if id != "" {
-		url = "https://mail.protonmail.com/api/messages/" + id
-		method = "PUT"
-	}
 
 	armor, err := helper.EncryptSignMessageArmored(service.AddressResult.Addresses[0].Keys[0].PublicKey, service.AddressResult.Addresses[0].Keys[0].PrivateKey, []byte(service.passphrase), plaintext)
+	if err != nil {
+		return
+	}
 
-	toList := []ToList{}
+	var toList []ToList
 	toList = append(toList, ToList{
 		Address:        receiver,
 		Name:           receiver,
@@ -391,39 +359,35 @@ func (service *ProtonMailService) CreateDraft(title, receiver, id, plaintext str
 		return
 	}
 
-	payload := strings.NewReader(string(d))
+	header := make(map[string]string)
+	header["x-pm-apiversion"] = "3"
+	header["x-pm-appversion"] = "Web_3.16.32"
+	header["Accept"] = "application/vnd.protonmail.v1+json"
+	header["Content-Type"] = "application/json"
+	header["x-pm-uid"] = service.AuthResult.Uid
+	header["Cookie"] = service.CookiesRaw
 
-	client := &http.Client {}
-	req, err := http.NewRequest(method, url, payload)
-
-	if err != nil {
-		return
+	body := ""
+	if id != "" {
+		body, err = HttpPut("https://mail.protonmail.com/api/messages/" + id, header, string(d))
+	} else {
+		body, err = HttpPost("https://mail.protonmail.com/api/messages", header, string(d))
 	}
-	req.Header.Add("x-pm-apiversion", "3")
-	req.Header.Add("x-pm-appversion", "Web_3.16.32")
-	req.Header.Add("Accept", "application/vnd.protonmail.v1+json")
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("x-pm-uid", service.AuthResult.Uid)
-	req.Header.Add("Cookie", service.CookiesRaw)
 
-	res, err := client.Do(req)
-	if err != nil {
-		return
-	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
+	err = json.Unmarshal([]byte(body), &result)
 	if err != nil {
 		return
 	}
 
-	fmt.Println(string(body))
+	if result.Code != 1000 {
+		err = errors.New(result.Error)
+	}
 
-	err = json.Unmarshal(body, &result)
 	return
 }
 
 func (service *ProtonMailService) Login() (err error) {
-	infoResult, err := service.info(service.UserName)
+	infoResult, err := service.Info()
 	if err != nil {
 		return
 	}
@@ -439,5 +403,25 @@ func (service *ProtonMailService) Login() (err error) {
 	}
 
 	service.AuthResult, err = service.auth(base64.StdEncoding.EncodeToString(proofs.ClientEphemeral), base64.StdEncoding.EncodeToString(proofs.ClientProof), infoResult.SRPSession)
-	return err
+
+	err = service.GetUser()
+	if err != nil {
+		return
+	}
+	err = service.GetSalts()
+	if err != nil {
+		return
+	}
+
+	err = service.GetCookies()
+	if err != nil {
+		return
+	}
+
+	err = service.GetAddress()
+	if err != nil {
+		return
+	}
+
+	return
 }

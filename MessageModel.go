@@ -42,10 +42,10 @@ type MessageData struct {
 
 type MessageResult struct {
 	Code int `json:"Code"`
+	Error string `json:"Error"`
 	Message struct {
 		ID string `json:"ID"`
 		Body string `json:"Body"`
-
 	} `json:"Message"`
 }
 

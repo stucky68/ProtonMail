@@ -2,14 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9f6fed41-d419-479d-8a3c-900fa4b2a8e6" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/httpClient.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MessageModel.go" beforeDir="false" afterPath="$PROJECT_DIR$/MessageModel.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/Utils.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/main_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/model.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/service.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -36,7 +32,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../QmSingleUpload" />
     <property name="settings.editor.selected.configurable" value="go.vgo" />
   </component>
   <component name="RunDashboard">
@@ -126,13 +122,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/main.go</url>
-          <line>6</line>
+          <line>4</line>
           <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/service.go</url>
-          <line>348</line>
-          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

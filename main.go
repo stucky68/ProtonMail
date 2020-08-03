@@ -11,25 +11,21 @@ func main()  {
 		PassWord: "QpfzEwZG3Lt6!$f",
 	}
 
-
 	fmt.Println(service.Login())
-	service.GetUser()
-	service.GetSalts()
 
-	service.GetCookies()
-	service.GetAddress()
 
+	receiver := "6992917@qq.com"
 
 	//fmt.Println(service.UserResult)
 	//fmt.Println(service.AddressResult)
 
-	msgResult, err := service.CreateDraft("我是标题", "6992917@qq.com", "", "")
+	msgResult, err := service.CreateDraft("我是标题", receiver, "", "")
 	fmt.Println(msgResult.Message.ID, err)
 
-	msgResult, err = service.CreateDraft("我是标题", "6992917@qq.com", msgResult.Message.ID, "<br><br><br>测试发送内容<br><br><br>")
+	msgResult, err = service.CreateDraft("我是标题", receiver, msgResult.Message.ID, "<br><br><br>测试发送内容<br><br><br>")
 	fmt.Println(msgResult.Message.ID, err)
 
-	service.SendMessage(msgResult.Message.ID, msgResult.Message.Body)
+	service.SendMessage(msgResult.Message.ID, msgResult.Message.Body, receiver)
 
 
 
