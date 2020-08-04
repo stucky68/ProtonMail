@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"io/ioutil"
@@ -6,14 +6,14 @@ import (
 	"strings"
 )
 
-func HttpPut(url string, header map[string]string, data string) (string, error) {
+func HttpPostCookies(url string, methond string, header map[string]string, data string) (string, []*http.Cookie, error) {
 	client := &http.Client{}
 
 	payload := strings.NewReader(data)
 
-	req, err := http.NewRequest("PUT", url, payload)
+	req, err := http.NewRequest(methond, url, payload)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	for key, value := range header {
@@ -23,21 +23,21 @@ func HttpPut(url string, header map[string]string, data string) (string, error) 
 	res, err := client.Do(req)
 	defer res.Body.Close()
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
-	return string(b), nil
+	return string(b), res.Cookies(), nil
 }
 
-func HttpPost(url string, header map[string]string, data string) (string, error) {
+func HttpPost(url string, methond string, header map[string]string, data string) (string, error) {
 	client := &http.Client{}
 
 	payload := strings.NewReader(data)
 
-	req, err := http.NewRequest("POST", url, payload)
+	req, err := http.NewRequest(methond, url, payload)
 	if err != nil {
 		return "", err
 	}

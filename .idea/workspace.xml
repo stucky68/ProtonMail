@@ -2,11 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9f6fed41-d419-479d-8a3c-900fa4b2a8e6" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/httpClient.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MessageModel.go" beforeDir="false" afterPath="$PROJECT_DIR$/MessageModel.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MessageModel.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/MessageModel.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/httpClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/httpClient.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/main_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/model.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/service.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -32,8 +35,15 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../QmSingleUpload" />
+    <property name="last_opened_file_path" value="$USER_HOME$" />
     <property name="settings.editor.selected.configurable" value="go.vgo" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Code\Go\src\ProtonMail\utils" />
+      <recent name="D:\Code\Go\src\ProtonMail\model" />
+      <recent name="D:\Code\Go\src\ProtonMail\service" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -119,11 +129,6 @@
           <url>file://$PROJECT_DIR$/../../pkg/mod/golang.org/x/crypto@v0.0.0-20200728195943-123391ffb6de/openpgp/packet/packet.go</url>
           <line>407</line>
           <option name="timeStamp" value="8" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/main.go</url>
-          <line>4</line>
-          <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

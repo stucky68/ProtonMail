@@ -1,4 +1,4 @@
-package main
+package model
 
 type GetInfoResult struct {
 	Code int `json:"Code"`

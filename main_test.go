@@ -1,7 +1,9 @@
 package main
 
 import (
+	service2 "ProtonMail/service"
 	"ProtonMail/srp"
+	"ProtonMail/utils"
 	"encoding/base64"
 	"fmt"
 	"github.com/ProtonMail/gopenpgp/v2/crypto"
@@ -13,15 +15,15 @@ import (
 
 func TestNewAuth(t *testing.T) {
 
-	service := ProtonMailService{
-		UserName: "6992917",
-		PassWord: "QpfzEwZG3Lt6!$f",
+	service := service2.ProtonMailClient{
+		userName: "6992917",
+		passWord: "QpfzEwZG3Lt6!$f",
 	}
 
 	salt, _ := base64.StdEncoding.DecodeString("hOkBf1JPQwzqwRIp0LM9tg==")
-	generatedMailboxPassword, _ := srp.MailboxPassword(service.PassWord, salt)
+	generatedMailboxPassword, _ := srp.MailboxPassword(service.passWord, salt)
 	generatedMailboxPassword = strings.ReplaceAll(generatedMailboxPassword, "$2y$10$", "")
-	generatedMailboxPassword = strings.ReplaceAll(generatedMailboxPassword, string(Radix64Encode(salt)), "")
+	generatedMailboxPassword = strings.ReplaceAll(generatedMailboxPassword, string(utils.Radix64Encode(salt)), "")
 
 	fmt.Println(generatedMailboxPassword)
 
