@@ -2,14 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9f6fed41-d419-479d-8a3c-900fa4b2a8e6" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Logging/log.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/receiver.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sender.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/task/task.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MessageModel.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/MessageModel.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Utils.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/httpClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/httpClient.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/main_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/model.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/model/model.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/service/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/service/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/Utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/Utils.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -35,10 +40,13 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="go.vgo" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\GoWork\src\ProtonMail" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Code\Go\src\ProtonMail\utils" />
       <recent name="D:\Code\Go\src\ProtonMail\model" />
@@ -66,6 +74,7 @@
       <filePath value="$PROJECT_DIR$/" />
       <package value="ProtonMail" />
       <directory value="$PROJECT_DIR$/" />
+      <output_directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
     <configuration name="TestNewAuth in ProtonMail (1)" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
@@ -97,8 +106,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Test.TestNewAuth in ProtonMail (1)" />
         <item itemvalue="Go Test.TestNewAuth in ProtonMail" />
+        <item itemvalue="Go Test.TestNewAuth in ProtonMail (1)" />
       </list>
     </recent_temporary>
   </component>

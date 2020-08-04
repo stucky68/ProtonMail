@@ -1,0 +1,13 @@
+{
+	"Title" : "发送测试",
+	"SendCount" : 5,
+	"ThreadNum" : 5,
+	"WaitTime" : 5,
+	"Value" : {
+		"//1为大写字母 2为小写字母 3为汉字 4为数字 5为随机变量" : "",
+		"ValueType" : 1,
+		"ValueLength" : 1,
+		"CustomValue" : "1|2|3|4|5"
+	},
+	"Content" : "<br><br><br>发送内容是这样的<br><br><br>"
+}

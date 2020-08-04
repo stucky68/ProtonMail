@@ -4,7 +4,11 @@ import (
 	"bytes"
 	"crypto/rand"
 	"errors"
+	"io/ioutil"
 	"math/big"
+	MathRand "math/rand"
+	"os"
+	"time"
 )
 
 func GetRandomString(len int) string {
@@ -156,4 +160,59 @@ func Radix64Decode(in []byte) []byte {
 
 	blockCopy(out, 0, prefix, 0, outCount)
 	return prefix
+}
+
+func ReadFile(path string) string {
+	fi, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer fi.Close()
+	fd, err := ioutil.ReadAll(fi)
+	return string(fd)
+}
+
+var Rand *MathRand.Rand
+
+func init() {
+	Rand = MathRand.New(MathRand.NewSource(time.Now().Unix()))
+}
+
+func RandInt(min, max int64) int64 {
+	return min + Rand.Int63n(max-min)
+}
+
+func RandNum(len int) string {
+	bytes := make([]byte, len)
+	for i := 0; i < len; i++ {
+		b := RandInt(48, 57)
+		bytes[i] = byte(b)
+	}
+	return string(bytes)
+}
+
+func RandUpper(len int) string {
+	bytes := make([]byte, len)
+	for i := 0; i < len; i++ {
+		b := RandInt(65, 90)
+		bytes[i] = byte(b)
+	}
+	return string(bytes)
+}
+
+func RandLetter(len int) string {
+	bytes := make([]byte, len)
+	for i := 0; i < len; i++ {
+		b := RandInt(97, 122)
+		bytes[i] = byte(b)
+	}
+	return string(bytes)
+}
+
+func RandHan(len int) string {
+	a := make([]rune, len)
+	for i := range a {
+		a[i] = rune(RandInt(19968, 40869))
+	}
+	return string(a)
 }

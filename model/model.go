@@ -83,6 +83,11 @@ type CookiesData struct {
 	UID string `json:"UID"`
 }
 
+type CookiesResult struct {
+	Code int `json:"Code"`
+	Error string `json:"Error"`
+}
+
 type AddressResult struct {
 	Code int `json:"Code"`
 	Error string `json:"Error"`
@@ -117,4 +122,19 @@ type AddressResult struct {
 	} `json:"Addresses"`
 }
 
+
+type ValueConfig struct {
+	ValueType int `json:"ValueType"`
+	ValueLength int `json:"ValueLength"`
+	CustomValue string `json:"CustomValue"`
+}
+
+type SendConfig struct {
+	Title     string `json:"Title"`
+	SendCount int    `json:"SendCount"`
+	ThreadNum int    `json:"ThreadNum"`
+	WaitTime  int    `json:"WaitTime"`
+	Value ValueConfig `json:"Value"`
+	Content string `json:"Content"`
+}
 

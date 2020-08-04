@@ -40,6 +40,10 @@ func NewProtonMailClient(userName, passWord string) *ProtonMailClient {
 	return &client
 }
 
+func (client *ProtonMailClient) GetUserName() string {
+	return client.userName
+}
+
 func (client *ProtonMailClient) Info() (result model.GetInfoResult, err error) {
 	header := make(map[string]string)
 	header["x-pm-apiversion"] = "3"
@@ -150,6 +154,7 @@ func (client *ProtonMailClient) GetSalts() (err error) {
 	}
 
 	if saltsResult.Code == 1000 {
+		//Logging.Println(saltsResult)
 		if len(saltsResult.KeySalts) > 0 {
 			salt, err := base64.StdEncoding.DecodeString(saltsResult.KeySalts[0].KeySalt)
 			if err != nil {
@@ -199,14 +204,29 @@ func (client *ProtonMailClient) GetCookies() (err error) {
 	header["x-pm-uid"] = client.authResult.Uid
 	header["Authorization"] = "Bearer " + client.authResult.AccessToken
 
-	_, cookies, err := utils.HttpPostCookies("https://mail.protonmail.com/api/auth/cookies", "POST", header, string(d))
+	body, cookies, err := utils.HttpPostCookies("https://mail.protonmail.com/api/auth/cookies", "POST", header, string(d))
 	if err != nil {
 		return
 	}
 
-	if len(cookies) > 2 {
-		client.cookiesRaw = cookies[1].Raw
-	} else {
+	result := model.CookiesResult{}
+	err = json.Unmarshal([]byte(body), &result)
+	if err != nil {
+		return
+	}
+
+	if result.Code != 1000 {
+		err = errors.New(result.Error)
+	}
+
+	for _, v := range cookies {
+		index := strings.Index(v.Raw, "AUTH")
+		if index != -1 {
+			client.cookiesRaw = v.Raw
+		}
+	}
+
+	if client.cookiesRaw == "" {
 		err = errors.New("cookies error")
 	}
 
@@ -338,7 +358,6 @@ func (client *ProtonMailClient) SendMessage(msgId, msgBody, receiver string) (er
 }
 
 func (client *ProtonMailClient) CreateDraft(title, receiver, id, plaintext string) (result model.MessageResult, err error) {
-
 	armor, err := helper.EncryptSignMessageArmored(client.publicKey, client.privateKey, []byte(client.passphrase), plaintext)
 	if err != nil {
 		return
@@ -446,6 +465,10 @@ func (client *ProtonMailClient) Logout() (err error) {
 	return
 }
 
+func (client *ProtonMailClient) IsLogin() bool {
+	return client.isLogin
+}
+
 func (client *ProtonMailClient) Login() (err error) {
 	if client.isLogin {
 		return
@@ -453,38 +476,41 @@ func (client *ProtonMailClient) Login() (err error) {
 
 	infoResult, err := client.Info()
 	if err != nil {
-		return
+		return errors.New(" Info " + err.Error())
 	}
 
 	auth, err := srp.NewAuth(infoResult.Version, client.userName, client.passWord, infoResult.Salt, infoResult.Modulus, infoResult.ServerEphemeral)
 	if err != nil {
-		return
+		return errors.New(" NewAuth " + err.Error())
 	}
 
 	proofs, err := auth.GenerateProofs(2048)
 	if err != nil {
-		return
+		return errors.New(" GenerateProofs " + err.Error())
 	}
 
 	client.authResult, err = client.auth(base64.StdEncoding.EncodeToString(proofs.ClientEphemeral), base64.StdEncoding.EncodeToString(proofs.ClientProof), infoResult.SRPSession)
+	if err != nil {
+		return errors.New(" Auth " + err.Error())
+	}
 
 	err = client.GetUser()
 	if err != nil {
-		return
+		return errors.New(" GetUser " + err.Error())
 	}
 	err = client.GetSalts()
 	if err != nil {
-		return
+		return errors.New(" GetSalts " + err.Error())
 	}
 
 	err = client.GetCookies()
 	if err != nil {
-		return
+		return errors.New(" GetCookies " + err.Error())
 	}
 
 	err = client.GetAddress()
 	if err != nil {
-		return
+		return errors.New(" GetAddress " + err.Error())
 	}
 
 	client.isLogin = true
