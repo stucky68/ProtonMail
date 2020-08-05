@@ -7,6 +7,7 @@ import (
 	"ProtonMail/utils"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -21,6 +22,8 @@ type Task struct {
 	notSend []string
 
 	valueConfig model.ValueConfig
+
+	mutex sync.Mutex
 }
 
 const (
@@ -68,18 +71,20 @@ func (task *Task) Process(receiver string, title string, plainText string) {
 
 	defer time.Sleep(time.Second * time.Duration(task.waitTime))
 
+	task.mutex.Lock()
 	if !task.client.IsLogin() {
 		str := fmt.Sprintf("%s正在登陆", task.client.GetUserName())
 		Logging.Println(str)
-	}
 
-	err := task.client.Login()
-	if err != nil {
-		str := fmt.Sprintf("%s出现错误%s", task.client.GetUserName(), err.Error())
-		Logging.Println(str)
-		f()
-		return
+		err := task.client.Login()
+		if err != nil {
+			str := fmt.Sprintf("%s出现错误%s", task.client.GetUserName(), err.Error())
+			Logging.Println(str)
+			f()
+			return
+		}
 	}
+	task.mutex.Unlock()
 
 	text := plainText
 	switch task.valueConfig.ValueType {
